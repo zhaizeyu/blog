@@ -28,9 +28,10 @@ newgrp docker
 
 ### 2. 安装 Go（建议 Go ≥ 1.19）
 ```bash
-curl -LO https://go.dev/dl/go1.21.6.linux-amd64.tar.gz
-sudo tar -C /usr/local -xzf go1.21.6.linux-amd64.tar.gz
+curl -LO https://go.dev/dl/go1.24.2.linux-amd64.tar.gz
+sudo tar -C /usr/local -xzf go1.24.2.linux-amd64.tar.gz
 echo 'export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin' >> ~/.bashrc
+echo 'export GOPATH=$HOME/go' >> ~/.bashrc
 source ~/.bashrc
 go version
 ```
@@ -74,10 +75,9 @@ kubectl cluster-info --context kind-my-operator
 ### 1. 安装 Kubebuilder
 
 ```bash
-curl -L https://github.com/kubernetes-sigs/kubebuilder/releases/download/v3.14.1/kubebuilder_3.14.1_linux_amd64.tar.gz | tar -xz -C /tmp/
-sudo mv /tmp/kubebuilder_3.14.1_linux_amd64 /usr/local/kubebuilder
-echo 'export PATH=$PATH:/usr/local/kubebuilder/bin' >> ~/.bashrc
-source ~/.bashrc
+# download kubebuilder and install locally.
+curl -L -o kubebuilder "https://go.kubebuilder.io/dl/latest/$(go env GOOS)/$(go env GOARCH)"
+chmod +x kubebuilder && sudo mv kubebuilder /usr/local/bin/
 ```
 
 ### 2. 验证
@@ -90,14 +90,15 @@ kubebuilder version
 ## 📁 四、开发一个 Operator 项目
 
 ```bash
-mkdir -p ~/workspace/my-operator && cd $_
-kubebuilder init --domain example.com --repo github.com/example/my-operator
-kubebuilder create api --group app --version v1 --kind MyApp
+mkdir -p ~/projects/guestbook
+cd ~/projects/guestbook
+kubebuilder init --domain my.domain --repo my.domain/guestbook
 # 回答 y 以生成 API 和 Controller
+kubebuilder create api --group webapp --version v1 --kind Guestbook
 ```
 
-- 修改 API 定义文件：`api/v1/myapp_types.go`
-- 编写逻辑：`controllers/myapp_controller.go`
+- 修改 API 定义文件：`api/v1/guestbook_types.go`
+- 编写逻辑：`controllers/guestbook_controller.go`
 
 ---
 
@@ -131,23 +132,23 @@ kubectl get pods -n my-operator-system
 
 ### 1. 创建 CR 实例
 
-编辑 `config/samples/app_v1_myapp.yaml` 文件，如下：
+编辑 `guestbook.yaml` 文件，如下：
 
 ```yaml
-apiVersion: app.example.com/v1
-kind: MyApp
+apiVersion: webapp.my.domain/v1
+kind: Guestbook
 metadata:
-  name: example-myapp
+  name: example-guestbook
 spec:
-  # 添加你的字段
+  foo: "hello-world"
 ```
 
 ### 2. 应用测试资源：
 
 ```bash
-kubectl apply -f config/samples/app_v1_myapp.yaml
-kubectl get myapp
-kubectl logs deployment/my-operator-controller-manager -n my-operator-system
+
+kubectl apply -f guestbook.yaml
+kubectl logs -nguestbook-system deploy/guestbook-controller-manager
 ```
 
 ---
@@ -175,11 +176,14 @@ kind delete cluster --name my-operator
 
 | 工具         | 推荐版本     |
 |--------------|--------------|
-| Go           | ≥ 1.19       |
-| Kubebuilder  | 3.14.1       |
+| Go           | ≥ 1.23       |
+| Kubebuilder  | 4.5.2       |
 | Kind         | ≥ 0.22.0     |
 | Kubernetes   | 1.28+（Kind 默认）|
 
 ---
 
-需要我为你生成一个完整可运行的示例 Operator 吗？或者一键化安装脚本？
+## PS：
+完善controller基本功能后需要主机配置rbac，基础镜像等
+rbac导致对pod的读写无权限，需要配置rbac内家role
+默认很简单的基础镜像内部无ls，cat，bash等命令
