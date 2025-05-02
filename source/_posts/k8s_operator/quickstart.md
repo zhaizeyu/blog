@@ -39,7 +39,7 @@ sudo usermod -aG docker $USER
 newgrp docker
 ```
 
-### 2. 安装 Go（建议 Go ≥ 1.19）
+### 2. 安装 Go（建议 Go ≥ 1.23）
 ```bash
 curl -LO https://go.dev/dl/go1.24.2.linux-amd64.tar.gz
 sudo tar -C /usr/local -xzf go1.24.2.linux-amd64.tar.gz
