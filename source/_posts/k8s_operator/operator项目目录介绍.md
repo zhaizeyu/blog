@@ -1,3 +1,15 @@
+title: operator项目目录介绍
+date: 2025-05-02
+categories:
+  - 学习笔记
+  - 编程
+  - k8s
+  - operator
+tags:
+  - k8s
+  - operator
+---
+
 在使用 **Kubebuilder** 创建的 Kubernetes Operator 项目中，目录结构非常清晰、标准，便于开发和维护。以下是一个典型的 Operator 项目的目录结构说明：
 
 ---

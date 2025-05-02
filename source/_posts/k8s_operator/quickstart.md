@@ -1,3 +1,16 @@
+title: quickstart
+date: 2025-05-02
+categories:
+  - 学习笔记
+  - 编程
+  - k8s
+  - operator
+tags:
+  - k8s
+  - operator
+---
+
+
 在一个**全新的 CentOS 环境**中开发并运行一个 **Kubernetes Operator**，需要完成一系列安装、配置和开发步骤。下面是一个完整的流程指南，从系统准备到部署 Operator 到 Kind 集群。
 
 ---
